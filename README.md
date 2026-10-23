@@ -10,12 +10,12 @@ DeepSeek Harness（dsh）のすべての会話に、**ひとりの、あなた�
 - 本人だけが知る過去（初回に非公開で生成され、信頼に応じて少しずつ話せるようになる）
 - 出力側の口調補正（一人称・絵文字）と、口調のずれの検出
 
-検証済み: `@deepseek-ai/dsh` **0.2.1-rc.2**（2026-10-23）。dsh は developer preview のため、他のバージョンでは動かない可能性があります。
+検証済み: `@deepseek-ai/dsh` **0.2.1-rc.2**（2026-10-23）。dsh は developer preview のため、他のバージョンでは動かない可能性があります。desktop プロファイルの主要プラグイン（save-token / OpenViking / agent-teams / LiangShen / markdown-reader / browser-use ほか）と同時に起動できることも確認しています。
 
 ## インストール
 
 ```bash
-dsh plugin --profile web add ./dsh-persona-core-0.1.0.tgz
+dsh plugin --profile web add ./dsh-persona-core-0.1.1.tgz
 dsh --profile web --dump-config | grep -A8 dsh-persona-core   # 読み込まれたか確認
 dsh web
 ```
@@ -48,6 +48,21 @@ dsh web
 | `distillEvery` | `4` | 何ターンごとに記憶を整理するか |
 | `recallLimit` | `8` | 1回に思い出す記憶の数 |
 | `emotion` / `memory` / `recognition` / `backstory` / `drift` | `true` | 各機能のオン／オフ |
+| `coexistWarnings` | `true` | 既知の競合プラグインを検知して警告する |
+
+## 他のプラグインとの共存
+
+同じプロファイルに他のプラグインが入っていても、dsh の拡張点が重ならない限り同時に動きます。persona-core が関係する組み合わせは次のとおりです。
+
+| プラグイン | 何が起きるか | 対応 |
+|---|---|---|
+| `@openviking/dsh-memory-plugin` | 毎ターン自動で記憶を思い出す点が重複する | 読み込み時に警告。記憶の持ち主を片方に寄せる（こちらの `memory: false`、または OpenViking の recall を off） |
+| `@linxin666/dsh-liangshen` | プリセットが system prompt を whitelist で置き換え、persona セクションが消える | セッションごとに検知し、そのセッションでは動的コンテキストと口調補正を止めて警告。persona を効かせたい会話は標準プリセットで |
+| `@nanmicoder/dsh-agent-teams` | チームメンバーは subagent 扱いなので、短い口調セクションが入る | 不要なら `subagent: off` |
+| `dsh-plugin-save-token` | `llm/stream` を観測するだけでストリームを置き換えない | 共存可（登録順に関係なく動く） |
+| `@deepseek-ai/dsh-persona`（標準） | deployment の persona prefix/suffix として併記される | persona-core は order 1 で後ろに追加。置き換えではない |
+
+検知結果は通常のログと `PERSONA_CORE_DEBUG_FILE` の両方に出ます。警告だけ止めたいときは `coexistWarnings: false` にしてください。
 
 ## 仕組み
 
@@ -58,6 +73,7 @@ dsh web
 | `agent/created` | 会話ごとに状態を結び付ける。サブエージェントには短い口調だけ |
 | `agent/pre-step` | あなたの発言を読み、今回の返答の前に状態を更新 |
 | `session/event` | ツール使用・返答・ターン終了を観測し、記憶をまとめる |
+| `system-prompt/assemble` | プリセットが system prompt を置き換えた場合に検知し、孤立した動的コンテキストを外す |
 | `llm/stream` | 彼女の発言テキストだけを補正（文字の断片と完成文の両方を一致させて書き換え） |
 | tools | `memory_recall` / `memory_save` |
 

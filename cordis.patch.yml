@@ -11,6 +11,7 @@
         # model: ''
         # distillEvery: 4
         # recallLimit: 8
+        # coexistWarnings: true    # 既知の競合プラグインを検知して警告
         emotion: true
         memory: true
         recognition: true
