@@ -1,0 +1,41 @@
+{
+  "name": "dsh-persona-core",
+  "version": "0.1.0",
+  "description": "One personalised character across every DeepSeek Harness conversation: layered persona, feelings, memory, soft recognition, a hidden past and output-side tone correction.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "defaults",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": "^22.19 || >=24",
+    "dsh": ">=0.2.1-rc.2 <0.3.0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "persona",
+    "memory"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "yaml": "2.9.1"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,18 @@
+- insert:
+    - id: dsh-persona-core
+      name: dsh-persona-core
+      config:
+        # characterName: ''        # 名前が決まったらここに書く（persona.yaml の name でも可）
+        # userName: ''             # 呼び名を固定したい場合
+        # timeZone: Asia/Tokyo
+        # toneCorrection: casual   # casual | always | off
+        # subagent: short          # short | full | off
+        # provider: ''             # 記憶の蒸留・過去の生成に使うモデル（未指定なら会話と同じモデル）
+        # model: ''
+        # distillEvery: 4
+        # recallLimit: 8
+        emotion: true
+        memory: true
+        recognition: true
+        backstory: true
+        drift: true
